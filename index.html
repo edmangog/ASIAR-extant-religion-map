@@ -1,0 +1,274 @@
+<html>
+
+<head>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" charset=utf-8 />
+  <title>Religions map for BRINFAITH</title>
+  <script src='https://api.tiles.mapbox.com/mapbox-gl-js/v2.0.0/mapbox-gl.js'></script>
+  <link href='https://api.tiles.mapbox.com/mapbox-gl-js/v2.0.0/mapbox-gl.css' rel='stylesheet' />
+
+  <script src="https://code.jquery.com/jquery-3.4.1.min.js"></script>
+
+  <!--html2canvas-->
+  <script src="https://html2canvas.hertzen.com/dist/html2canvas.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/javascript-canvas-to-blob/3.17.0/js/canvas-to-blob.js"></script>
+
+  <!--geocoder-->
+  <script
+    src='https://api.mapbox.com/mapbox-gl-js/plugins/mapbox-gl-geocoder/v4.2.0/mapbox-gl-geocoder.min.js'></script>
+  <link rel='stylesheet'
+    href='https://api.mapbox.com/mapbox-gl-js/plugins/mapbox-gl-geocoder/v4.2.0/mapbox-gl-geocoder.css'
+    type='text/css' />
+
+  <!--fonts-->
+  <link href="https://fonts.googleapis.com/css2?family=Averia+Serif+Libre:ital,wght@1,300&display=swap"
+    rel="stylesheet">
+  <link href='https://fonts.googleapis.com/css?family=Oswald' rel='stylesheet'>
+  <link href='https://fonts.googleapis.com/css?family=Athiti' rel='stylesheet'>
+
+  <link rel="stylesheet" type="text/css" href="index.css">
+</head>
+
+<body>
+  <div id='map'></div>
+  <div id='loading' style="display: block;">
+    <div class="spinner">
+      Loading
+      <div class="rect1"></div>
+      <div class="rect2"></div>
+      <div class="rect3"></div>
+      <div class="rect4"></div>
+      <div class="rect5"></div>
+    </div>
+  </div>
+  <div class='header' id='header'>
+    <div class='brinfaithlogo'>
+      <input type='image' src='http://www.brinfaithmap.space/story/img/brinfaithlogo.png'
+        onclick="window.location.href='https://brinfaith.com/'">
+      <div id='storymaptext'>RELIGIONS MAP</div>
+      <div id='storymapUL'></div>
+    </div>
+    <div class='functionbutton'>
+      <button class='button' name='button' id='Layer' title='Menu'>
+        <img src='http://brinfaithmap.space/story/img/layers.png'></button>
+      <button class='button' name='button' id='Legend' title='Legend'>
+        <img src='http://brinfaithmap.space/story/img/information.png'></button>
+    </div>
+    <div id='buttons'>
+      <div id='about'>ABOUT THIS MAP</div>
+      <button class='button' title='Brinfaith Facebook'
+        onclick="window.location.href='https://www.facebook.com/asiar.hku'" style="height: 65%;">
+        <img src='http://brinfaithmap.space/story/img/facebook.png'></button>
+      <button class='button' title='Brinfaith Twitter' onclick="window.location.href='https://twitter.com/asiarhk'"
+        style="height: 65%;">
+        <img src='http://brinfaithmap.space/story/img/twitter.png'></button>
+    </div>
+  </div>
+  <div class='footer'>
+    <div id='footernote'>Hover over the map to view the religious demography</div>
+
+    <div id='religioustable' style="display: none;">
+      <table class=MBfooterinfoT cellspacing=4>
+        <tr valign=top>
+          <td class=MBfooterinfoTP id='placename' colspan=4></td>
+        </tr>
+        <tr valign=top>
+          <td class=MBfooterinfoTT> 1st Religion: </td>
+          <td class=MBfooterinfoTC id='1streligion'></td>
+          <td class=MBfooterinfoTT style="display: none;" id='2ndreligion'> 2nd Religion: </td>
+          <td class=MBfooterinfoTC style="display: none;" id='religion2'></td>
+        </tr>
+        <tr valign=top>
+          <td class=MBfooterinfoTT style="display: none;" id='1stethnic'> 1st Ethnicity: </td>
+          <td class=MBfooterinfoTC style="display: none;" id='ethnic1'></td>
+          <td class=MBfooterinfoTT style="display: none;" id='2ndethnic'> 2nd Ethnicity: </td>
+          <td class=MBfooterinfoTC style="display: none;" id='ethnic2'></td>
+        </tr>
+        <tr valign=top>
+          <td class=MBfooterinfoTT> Year: </td>
+          <td class=MBfooterinfoTC id='year'></td>
+        </tr>
+        <tr valign=top>
+          <td class=MBfooterinfoTT> Data Source: </td>
+          <td class=MBfooterinfoTC id='datasource' colspan="4"></td>
+        </tr>
+      </table>
+      <div id='tablenote'>Left/right click on the area to pin/unpin the table</div>
+    </div>
+  </div>
+  <div class='left'>
+    <div class='reg-filter'>
+      <div class='reg-filter-title'>Dominant and sub-dominant religion</div>
+      <div class='reg-filter-title'>Buddhism</div>
+      <div class='regswitch'>
+        <label class='switchbox'>
+          <input id='Buddhists(Tibetan Buddhism)' class='sliderCB' name='reg-sliderCB' type="checkbox" checked>
+          <span class='slider'></span>
+        </label>
+        <label class='switchbox-sec'>
+          <input id='BUDTB_S' class='sliderCB' name='reg-sliderCB-sec' type="checkbox">
+          <span class='slider'></span>
+        </label>
+        <div class='regswitchtext'>Buddhism(Tibetan)</div>
+      </div>
+      <div class='regswitch'>
+        <label class='switchbox'>
+          <input id='Buddhists(Theravada)' class='sliderCB' name='reg-sliderCB' type="checkbox" checked>
+          <span class='slider'></span>
+        </label>
+        <label class='switchbox-sec'>
+          <input id='BUDT_S' class='sliderCB' name='reg-sliderCB-sec' type="checkbox">
+          <span class='slider'></span>
+        </label>
+        <div class='regswitchtext'>Buddhism(Theravada)</div>
+      </div>
+      <div class='regswitch'>
+        <label class='switchbox'>
+          <input id='Buddhists(Mahayana)' class='sliderCB' name='reg-sliderCB' type="checkbox" checked>
+          <span class='slider'></span>
+        </label>
+        <label class='switchbox-sec'>
+          <input id='BUDM_S' class='sliderCB' name='reg-sliderCB-sec' type="checkbox">
+          <span class='slider'></span>
+        </label>
+        <div class='regswitchtext'>Buddhism(Mahayana)</div>
+      </div>
+      <div class='reg-filter-title'>Christianity</div>
+      <div class='regswitch'>
+        <label class='switchbox'>
+          <input id='Catholics' class='sliderCB' name='reg-sliderCB' type="checkbox" checked>
+          <span class='slider'></span>
+        </label>
+        <label class='switchbox-sec'>
+          <input id='CATH_S' class='sliderCB' name='reg-sliderCB-sec' type="checkbox">
+          <span class='slider'></span>
+        </label>
+        <div class='regswitchtext'>Catholicism</div>
+      </div>
+      <div class='regswitch'>
+        <label class='switchbox'>
+          <input id='Protestants' class='sliderCB' name='reg-sliderCB' type="checkbox" checked>
+          <span class='slider'></span>
+        </label>
+        <label class='switchbox-sec'>
+          <input id='PRO_S' class='sliderCB' name='reg-sliderCB-sec' type="checkbox">
+          <span class='slider'></span>
+        </label>
+        <div class='regswitchtext'>Protestantism</div>
+      </div>
+      <div class='regswitch'>
+        <label class='switchbox'>
+          <input id='Eastern orthodox' class='sliderCB' name='reg-sliderCB' type="checkbox" checked>
+          <span class='slider'></span>
+        </label>
+        <label class='switchbox-sec'>
+          <input id='EO_S' class='sliderCB' name='reg-sliderCB-sec' type="checkbox">
+          <span class='slider'></span>
+        </label>
+        <div class='regswitchtext'>Eastern Orthodoxy</div>
+      </div>
+      <div class='regswitch'>
+        <label class='switchbox'>
+          <input id='Oriental orthodox' class='sliderCB' name='reg-sliderCB' type="checkbox" checked>
+          <span class='slider'></span>
+        </label>
+        <div class='regswitchtext'>Oriental Orthodoxy</div>
+      </div>
+      <div class='reg-filter-title'>Islam</div>
+      <div class='regswitch'>
+        <label class='switchbox'>
+          <input id='Muslims(Sunni)' class='sliderCB' name='reg-sliderCB' type="checkbox" checked>
+          <span class='slider'></span>
+        </label>
+        <label class='switchbox-sec'>
+          <input id='ISLSU_S' class='sliderCB' name='reg-sliderCB-sec' type="checkbox">
+          <span class='slider'></span>
+        </label>
+        <div class='regswitchtext'>Islam(Sunni)</div>
+      </div>
+      <div class='regswitch'>
+        <label class='switchbox'>
+          <input id='Muslims(Shia)' class='sliderCB' name='reg-sliderCB' type="checkbox" checked>
+          <span class='slider'></span>
+        </label>
+        <label class='switchbox-sec'>
+          <input id='ISLSH_S' class='sliderCB' name='reg-sliderCB-sec' type="checkbox">
+          <span class='slider'></span>
+        </label>
+        <div class='regswitchtext'>Islam(Shia)</div>
+      </div>
+      <div class='regswitch'>
+        <label class='switchbox'>
+          <input id='Muslims(Ibadi)' class='sliderCB' name='reg-sliderCB' type="checkbox" checked>
+          <span class='slider'></span>
+        </label>
+        <div class='regswitchtext'>Islam(Ibadi)</div>
+      </div>
+      <div class='regswitch'>
+        <label class='switchbox'>
+          <input id='Muslims(Non-denominational)' class='sliderCB' name='reg-sliderCB' type="checkbox" checked>
+          <span class='slider'></span>
+        </label>
+        <div class='regswitchtext'>Islam(Non-denominational)</div>
+      </div>
+      <div class='reg-filter-title'>Other</div>
+      <div class='regswitch'>
+        <label class='switchbox'>
+          <input id='East Asian Religiosity' class='sliderCB' name='reg-sliderCB' type="checkbox" checked>
+          <span class='slider'></span>
+        </label>
+        <label class='switchbox-sec'>
+          <input id='TTS_S' class='sliderCB' name='reg-sliderCB-sec' type="checkbox">
+          <span class='slider'></span>
+        </label>
+        <div class='regswitchtext'>East Asian Religiosity</div>
+      </div>
+      <div class='regswitch'>
+        <label class='switchbox'>
+          <input id='Daoists' class='sliderCB' name='reg-sliderCB' type="checkbox" checked>
+          <span class='slider'></span>
+        </label>
+        <label class='switchbox-sec'>
+          <input id='DAO_S' class='sliderCB' name='reg-sliderCB-sec' type="checkbox">
+          <span class='slider'></span>
+        </label>
+        <div class='regswitchtext'>Daoism</div>
+      </div>
+      <div class='regswitch'>
+        <label class='switchbox'>
+          <input id='Hindus' class='sliderCB' name='reg-sliderCB' type="checkbox" checked>
+          <span class='slider'></span>
+        </label>
+        <label class='switchbox-sec'>
+          <input id='HIN_S' class='sliderCB' name='reg-sliderCB-sec' type="checkbox">
+          <span class='slider'></span>
+        </label>
+        <div class='regswitchtext'>Hinduism</div>
+      </div>
+      <div class='regswitch'>
+        <label class='switchbox'>
+          <input id='Irreligionists' class='sliderCB' name='reg-sliderCB' type="checkbox" checked>
+          <span class='slider'></span>
+        </label>
+        <label class='switchbox-sec'>
+          <input id='IR_S' class='sliderCB' name='reg-sliderCB-sec' type="checkbox">
+          <span class='slider'></span>
+        </label>
+        <div class='regswitchtext'>Irreligion</div>
+      </div>
+      <div class='regswitch'>
+        <label class='switchbox'>
+          <input id='Other' class='sliderCB' name='reg-sliderCB' type="checkbox" checked>
+          <span class='slider'></span>
+        </label>
+        <label class='switchbox-sec'>
+          <input id='ETR_S' class='sliderCB' name='reg-sliderCB-sec' type="checkbox">
+          <span class='slider'></span>
+        </label>
+        <div class='regswitchtext'>Other</div>
+      </div>
+    </div>
+  </div>
+  <script src="index.js"></script>
+</body>
+
+</html>
